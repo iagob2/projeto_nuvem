@@ -1,0 +1,32 @@
+# Arquivo de exemplo para terraform.tfvars
+# COPIE este arquivo para terraform.tfvars e preencha com seus valores reais
+# IMPORTANTE: terraform.tfvars NÃO deve ser versionado no Git (adicione ao .gitignore)
+
+# Configurações básicas
+aws_region     = "sa-east-1"
+environment    = "dev"
+project_name   = "nuvem"
+
+# Configurações de rede
+vpc_cidr           = "10.0.0.0/16"
+availability_zones = ["sa-east-1a", "sa-east-1b"]
+
+# Configurações de instâncias
+instance_type = "t3.micro"
+
+# Configurações do RDS
+db_instance_class     = "db.t3.micro"
+db_allocated_storage  = 20
+db_name               = "tasksdb"
+
+# CREDENCIAIS DO BANCO DE DADOS
+# IMPORTANTE: Estas credenciais são usadas apenas para criar o RDS inicialmente.
+# Após a criação, as aplicações (Lambdas/ECS) devem usar AWS Secrets Manager.
+# NUNCA coloque senhas reais neste arquivo de exemplo.
+db_username = "admin"
+db_password = "SUA_SENHA_SEGURA_AQUI"
+
+# Alternativa: Use variáveis de ambiente em vez de terraform.tfvars:
+# export TF_VAR_db_username="admin"
+# export TF_VAR_db_password="sua_senha_segura"
+

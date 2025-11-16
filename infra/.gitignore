@@ -1,0 +1,28 @@
+# Arquivos sensíveis que NÃO devem ser versionados
+terraform.tfvars
+*.tfvars
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+crash.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Arquivos de backup
+*.backup
+*.bak
+
+# Arquivos de IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Arquivos de build Lambda
+build/
+*.zip
+

@@ -1,0 +1,47 @@
+# Arquivos sensíveis que NÃO devem ser versionados
+terraform.tfvars
+*.tfvars
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+crash.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Arquivos de backup
+*.backup
+*.bak
+tfplan
+*.tfplan
+
+# Arquivos de IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Arquivos de build Lambda
+build/
+*.zip
+
+# Arquivos de credenciais AWS
+**/.aws/
+**/*.pem
+**/*.key
+**/*_accessKeys.csv
+
+# Node modules (se não quiser versionar)
+node_modules/
+
+# Logs
+*.log
+logs/
+
+# Arquivos temporários
+.DS_Store
+Thumbs.db
+
