@@ -1,5 +1,17 @@
 # Grafana Setup
 
+### Indice
+
+1. [Pré requisitos](#pré-requisitos)
+2. [1. Iniciar o Servidor Grafana](#1.-iniciar-o-servidor-grafana)
+3. [2. Acessar o Grafana](#2.-acessar-o-grafana)
+4. [3. Configurar o Grafana](#3.-configurar-o-grafana)
+5. [4. Configurar os Dashboards](#4.-configurar-os-dashboards)
+
+### Pré requisitos
+
+- Docker
+
 ## 1. Iniciar o Servidor Grafana
 
 ```bash
