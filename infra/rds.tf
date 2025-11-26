@@ -27,12 +27,22 @@ resource "aws_db_subnet_group" "tasks" {
 # AWS Secrets Manager - Secret para credenciais do RDS
 # Armazena username e password do banco de forma segura e criptografada
 # As aplicações (Lambda/ECS) leem este secret em runtime
+# 
+# IMPORTANTE: Se você receber erro de que o secret já existe e está agendado para deleção,
+# você precisa restaurar ou remover o secret manualmente antes:
+# - Via AWS Console: Restaurar o secret cancelando a deleção
+# - Via AWS CLI: aws secretsmanager restore-secret --secret-id nuvem-rds-credentials --region sa-east-1
+# - Ou remover: aws secretsmanager delete-secret --secret-id nuvem-rds-credentials --force-delete-without-recovery --region sa-east-1
 resource "aws_secretsmanager_secret" "rds_credentials" {
   name        = "${var.project_name}-rds-credentials"
   description = "Credenciais do banco de dados RDS MySQL"
 
   tags = {
     Name = "${var.project_name}-rds-credentials"
+  }
+  
+  lifecycle {
+    create_before_destroy = true
   }
 }
 
@@ -103,3 +113,46 @@ resource "aws_db_instance" "tasks_db" {
 #   }
 # }
 
+# ============================================================================
+# Criar tabela automaticamente após RDS estar disponível
+# ============================================================================
+# Este recurso executa o script PowerShell init-database.ps1 automaticamente
+# após o RDS estar disponível (status = available)
+#
+# IMPORTANTE: 
+# - Requer Node.js/npm instalado (para criar ZIP da Lambda)
+# - O script cria uma Lambda temporária que executa o SQL e depois a deleta
+# - Se o script falhar, você pode executá-lo manualmente: .\init-database.ps1
+# ============================================================================
+resource "null_resource" "create_table" {
+  depends_on = [
+    aws_db_instance.tasks_db,
+    aws_secretsmanager_secret_version.rds_credentials
+  ]
+
+  triggers = {
+    # Executa sempre que o endpoint do RDS mudar (nova criação)
+    rds_endpoint = aws_db_instance.tasks_db.endpoint
+    
+    # Executa se o SQL mudar (você pode forçar executar alterando este arquivo)
+    sql_hash = filemd5("${path.module}/../lambda/criar_task/create_table.sql")
+  }
+
+  # Executar script PowerShell para criar tabela
+  # ⚠️ IMPORTANTE: on_failure = continue permite que o Terraform continue mesmo se o script falhar
+  # O script pode falhar se os outputs ainda não estiverem disponíveis durante o primeiro apply
+  # Neste caso, execute o script manualmente após o terraform apply: .\init-database.ps1
+  provisioner "local-exec" {
+    command     = "powershell.exe -ExecutionPolicy Bypass -File ${path.module}/init-database.ps1 -AWS_REGION ${var.aws_region}"
+    interpreter = ["PowerShell", "-Command"]
+    on_failure  = continue  # Continuar mesmo se o script falhar (outputs podem não estar disponíveis ainda)
+  }
+
+  # Se o script falhar, não falhar o terraform (apenas aviso)
+  provisioner "local-exec" {
+    when        = destroy
+    command     = "Write-Host 'Limpeza: Se houver Lambda temporária, ela será deletada no próximo run do script'"
+    interpreter = ["PowerShell", "-Command"]
+    on_failure  = continue
+  }
+}

@@ -1,0 +1,2 @@
+# URL do API Gateway (obtenha com: terraform output api_gateway_url)
+API_GATEWAY_URL=https://seu-api-gateway.execute-api.sa-east-1.amazonaws.com/dev

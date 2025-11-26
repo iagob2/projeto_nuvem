@@ -25,41 +25,48 @@ exports.handler = async (event) => {
     });
     console.log('Conectado ao RDS MySQL');
 
-    // Processar evento do API Gateway
-    const body = JSON.parse(event.body || '{}');
-
-    // Validar campos obrigatórios
-    if (!body.title) {
+    // Extrair ID do path parameters
+    const taskId = event.pathParameters?.id || event.pathParameters?.taskId;
+    
+    if (!taskId) {
       return {
         statusCode: 400,
         headers: {
           'Content-Type': 'application/json',
           'Access-Control-Allow-Origin': '*'
         },
-        body: JSON.stringify({ error: 'Campo "title" é obrigatório' })
+        body: JSON.stringify({ error: 'ID da task é obrigatório' })
       };
     }
 
-    // Inserir nova task no banco
-    const [result] = await connection.execute(
-      'INSERT INTO tasks (title, description, status, created_at) VALUES (?, ?, ?, NOW())',
-      [body.title, body.description || null, body.status || 'pending']
+    // Buscar task por ID
+    const [rows] = await connection.execute(
+      'SELECT * FROM tasks WHERE id = ?',
+      [taskId]
     );
 
     await connection.end();
 
+    // Verificar se a task foi encontrada
+    if (rows.length === 0) {
+      return {
+        statusCode: 404,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        },
+        body: JSON.stringify({ error: 'Task não encontrada' })
+      };
+    }
+
     return {
-      statusCode: 201,
+      statusCode: 200,
       headers: {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*'
       },
       body: JSON.stringify({
-        message: 'Task criada com sucesso',
-        id: result.insertId,
-        title: body.title,
-        description: body.description || null,
-        status: body.status || 'pending'
+        task: rows[0]
       })
     };
 

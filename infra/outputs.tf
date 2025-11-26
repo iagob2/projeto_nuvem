@@ -135,6 +135,16 @@ output "lambda_criar_task_function_name" {
   value       = aws_lambda_function.criar_task.function_name
 }
 
+output "lambda_role_arn" {
+  description = "ARN da IAM Role usada pelas Lambdas"
+  value       = aws_iam_role.lambda.arn
+}
+
+output "lambda_security_group_id" {
+  description = "ID do security group usado pelas Lambdas"
+  value       = aws_security_group.lambda.id
+}
+
 # API Gateway Outputs (adicionais)
 output "api_gateway_id" {
   description = "ID do API Gateway"
@@ -144,5 +154,27 @@ output "api_gateway_id" {
 output "api_gateway_execution_arn" {
   description = "ARN de execução do API Gateway"
   value       = aws_api_gateway_rest_api.tasks_api.execution_arn
+}
+
+# ECR Outputs
+output "ecr_backend_repository_url" {
+  description = "URL do repositório ECR do back-end"
+  value       = aws_ecr_repository.backend.repository_url
+}
+
+output "ecr_frontend_repository_url" {
+  description = "URL do repositório ECR do front-end"
+  value       = aws_ecr_repository.frontend.repository_url
+}
+
+# ECS Service Outputs
+output "backend_service_name" {
+  description = "Nome do serviço ECS do back-end"
+  value       = aws_ecs_service.backend.name
+}
+
+output "frontend_service_name" {
+  description = "Nome do serviço ECS do front-end"
+  value       = aws_ecs_service.frontend.name
 }
 

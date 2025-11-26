@@ -1,0 +1,13 @@
+services:
+  backend:
+    build: .
+    container_name: backendContainer-nuvem
+    ports:
+      - "8000:8000"
+    environment:
+      # URL do API Gateway (obtenha com: cd infra && terraform output api_gateway_url)
+      # Exemplo: https://xxxxx.execute-api.sa-east-1.amazonaws.com/dev
+      API_GATEWAY_URL: ${API_GATEWAY_URL:-https://your-api-gateway.execute-api.sa-east-1.amazonaws.com/dev}
+    restart: unless-stopped
+    env_file:
+      - variaveis.end  # Carrega variáveis do arquivo variaveis.end se existir

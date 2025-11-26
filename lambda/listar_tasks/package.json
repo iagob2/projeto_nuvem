@@ -1,0 +1,16 @@
+{
+  "name": "listar-tasks-lambda",
+  "version": "1.0.0",
+  "description": "Lambda function para listar tasks",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.1692.0",
+    "mysql2": "^3.15.3"
+  },
+  "author": "",
+  "license": "ISC"
+}
+

@@ -161,6 +161,252 @@ resource "aws_lambda_function" "criar_task" {
   }
 }
 
+# CloudWatch Log Group para Lambda ListarTasks
+resource "aws_cloudwatch_log_group" "listar_tasks" {
+  name              = "/aws/lambda/ListarTasks"
+  retention_in_days = 7
+
+  tags = {
+    Name = "listar-tasks-logs"
+  }
+}
+
+# Função Lambda ListarTasks
+resource "aws_lambda_function" "listar_tasks" {
+  function_name = "ListarTasks"
+  handler       = "index.handler"
+  runtime       = "nodejs18.x"
+  role          = aws_iam_role.lambda.arn
+  filename      = "../build/listar_tasks.zip"
+  source_code_hash = filebase64sha256("../build/listar_tasks.zip")
+
+  timeout     = 30
+  memory_size = 256
+
+  # VPC config para acessar RDS
+  vpc_config {
+    subnet_ids         = aws_subnet.private[*].id
+    security_group_ids = [aws_security_group.lambda.id]
+  }
+
+  environment {
+    variables = {
+      ENVIRONMENT      = var.environment
+      DB_SECRET_ARN    = aws_secretsmanager_secret.rds_credentials.arn
+      RDS_ENDPOINT     = aws_db_instance.tasks_db.address
+      RDS_PORT         = tostring(aws_db_instance.tasks_db.port)
+      DB_NAME          = var.db_name
+    }
+  }
+
+  depends_on = [
+    aws_iam_role_policy_attachment.lambda_vpc,
+    aws_iam_role_policy_attachment.lambda_policy,
+    aws_cloudwatch_log_group.listar_tasks
+  ]
+
+  tags = {
+    Name = "ListarTasks"
+  }
+}
+
+# CloudWatch Log Group para Lambda ObterTaskPorId
+resource "aws_cloudwatch_log_group" "obter_task_por_id" {
+  name              = "/aws/lambda/ObterTaskPorId"
+  retention_in_days = 7
+
+  tags = {
+    Name = "obter-task-por-id-logs"
+  }
+}
+
+# Função Lambda ObterTaskPorId
+resource "aws_lambda_function" "obter_task_por_id" {
+  function_name = "ObterTaskPorId"
+  handler       = "index.handler"
+  runtime       = "nodejs18.x"
+  role          = aws_iam_role.lambda.arn
+  filename      = "../build/obter_task_por_id.zip"
+  source_code_hash = filebase64sha256("../build/obter_task_por_id.zip")
+
+  timeout     = 30
+  memory_size = 256
+
+  # VPC config para acessar RDS
+  vpc_config {
+    subnet_ids         = aws_subnet.private[*].id
+    security_group_ids = [aws_security_group.lambda.id]
+  }
+
+  environment {
+    variables = {
+      ENVIRONMENT      = var.environment
+      DB_SECRET_ARN    = aws_secretsmanager_secret.rds_credentials.arn
+      RDS_ENDPOINT     = aws_db_instance.tasks_db.address
+      RDS_PORT         = tostring(aws_db_instance.tasks_db.port)
+      DB_NAME          = var.db_name
+    }
+  }
+
+  depends_on = [
+    aws_iam_role_policy_attachment.lambda_vpc,
+    aws_iam_role_policy_attachment.lambda_policy,
+    aws_cloudwatch_log_group.obter_task_por_id
+  ]
+
+  tags = {
+    Name = "ObterTaskPorId"
+  }
+}
+
+# CloudWatch Log Group para Lambda SalvarCSV
+resource "aws_cloudwatch_log_group" "salvar_csv" {
+  name              = "/aws/lambda/SalvarCSV"
+  retention_in_days = 7
+
+  tags = {
+    Name = "salvar-csv-logs"
+  }
+}
+
+# Função Lambda SalvarCSV
+resource "aws_lambda_function" "salvar_csv" {
+  function_name = "SalvarCSV"
+  handler       = "index.handler"
+  runtime       = "nodejs18.x"
+  role          = aws_iam_role.lambda.arn
+  filename      = "../build/salvar_csv.zip"
+  source_code_hash = filebase64sha256("../build/salvar_csv.zip")
+
+  timeout     = 60
+  memory_size = 512
+
+  # VPC config para acessar RDS
+  vpc_config {
+    subnet_ids         = aws_subnet.private[*].id
+    security_group_ids = [aws_security_group.lambda.id]
+  }
+
+  environment {
+    variables = {
+      ENVIRONMENT      = var.environment
+      DB_SECRET_ARN    = aws_secretsmanager_secret.rds_credentials.arn
+      RDS_ENDPOINT     = aws_db_instance.tasks_db.address
+      RDS_PORT         = tostring(aws_db_instance.tasks_db.port)
+      DB_NAME          = var.db_name
+      CSV_BUCKET_NAME  = aws_s3_bucket.csv_bucket.id
+    }
+  }
+
+  depends_on = [
+    aws_iam_role_policy_attachment.lambda_vpc,
+    aws_iam_role_policy_attachment.lambda_policy,
+    aws_cloudwatch_log_group.salvar_csv
+  ]
+
+  tags = {
+    Name = "SalvarCSV"
+  }
+}
+
+# CloudWatch Log Group para Lambda AtualizarTask
+resource "aws_cloudwatch_log_group" "atualizar_task" {
+  name              = "/aws/lambda/AtualizarTask"
+  retention_in_days = 7
+
+  tags = {
+    Name = "atualizar-task-logs"
+  }
+}
+
+# Função Lambda AtualizarTask
+resource "aws_lambda_function" "atualizar_task" {
+  function_name = "AtualizarTask"
+  handler       = "index.handler"
+  runtime       = "nodejs18.x"
+  role          = aws_iam_role.lambda.arn
+  filename      = "../build/atualizar_task.zip"
+  source_code_hash = filebase64sha256("../build/atualizar_task.zip")
+
+  timeout     = 30
+  memory_size = 256
+
+  # VPC config para acessar RDS
+  vpc_config {
+    subnet_ids         = aws_subnet.private[*].id
+    security_group_ids = [aws_security_group.lambda.id]
+  }
+
+  environment {
+    variables = {
+      ENVIRONMENT      = var.environment
+      DB_SECRET_ARN    = aws_secretsmanager_secret.rds_credentials.arn
+      RDS_ENDPOINT     = aws_db_instance.tasks_db.address
+      RDS_PORT         = tostring(aws_db_instance.tasks_db.port)
+      DB_NAME          = var.db_name
+    }
+  }
+
+  depends_on = [
+    aws_iam_role_policy_attachment.lambda_vpc,
+    aws_iam_role_policy_attachment.lambda_policy,
+    aws_cloudwatch_log_group.atualizar_task
+  ]
+
+  tags = {
+    Name = "AtualizarTask"
+  }
+}
+
+# CloudWatch Log Group para Lambda DeletarTask
+resource "aws_cloudwatch_log_group" "deletar_task" {
+  name              = "/aws/lambda/DeletarTask"
+  retention_in_days = 7
+
+  tags = {
+    Name = "deletar-task-logs"
+  }
+}
+
+# Função Lambda DeletarTask
+resource "aws_lambda_function" "deletar_task" {
+  function_name = "DeletarTask"
+  handler       = "index.handler"
+  runtime       = "nodejs18.x"
+  role          = aws_iam_role.lambda.arn
+  filename      = "../build/deletar_task.zip"
+  source_code_hash = filebase64sha256("../build/deletar_task.zip")
+
+  timeout     = 30
+  memory_size = 256
+
+  # VPC config para acessar RDS
+  vpc_config {
+    subnet_ids         = aws_subnet.private[*].id
+    security_group_ids = [aws_security_group.lambda.id]
+  }
+
+  environment {
+    variables = {
+      ENVIRONMENT      = var.environment
+      DB_SECRET_ARN    = aws_secretsmanager_secret.rds_credentials.arn
+      RDS_ENDPOINT     = aws_db_instance.tasks_db.address
+      RDS_PORT         = tostring(aws_db_instance.tasks_db.port)
+      DB_NAME          = var.db_name
+    }
+  }
+
+  depends_on = [
+    aws_iam_role_policy_attachment.lambda_vpc,
+    aws_iam_role_policy_attachment.lambda_policy,
+    aws_cloudwatch_log_group.deletar_task
+  ]
+
+  tags = {
+    Name = "DeletarTask"
+  }
+}
+
 # Exemplo de função Lambda adicional (comentada)
 # resource "aws_lambda_function" "listar_tasks" {
 #   function_name = "ListarTasks"

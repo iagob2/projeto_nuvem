@@ -16,9 +16,9 @@
 
 terraform {
   backend "s3" {
-    bucket         = "meu-terraform-state-bucket-uniqueno"  # Bucket para armazenar o state
+    bucket         = "meu-terraform-state-bucket-uniqueno21"  # Bucket para armazenar o state
     key            = "tasks-architecture/terraform.tfstate"  # Caminho do arquivo de estado
-    region         = "us-east-1"                            # Região do bucket (ajustada para corresponder à localização real)
+    region         = "us-east-2"                            # Região do bucket (ajustada para corresponder à localização real)
     dynamodb_table = "terraform-locks"                       # Tabela DynamoDB para locking
     encrypt        = true                                    # Criptografar o estado
     # Nota: dynamodb_table ainda é necessário para locking. O aviso sobre "use_lockfile" 

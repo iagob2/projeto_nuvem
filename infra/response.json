@@ -1,0 +1,1 @@
+{"statusCode":500,"headers":{"Content-Type":"application/json","Access-Control-Allow-Origin":"*"},"body":"{\"error\":\"Incorrect arguments to mysqld_stmt_execute\"}"}

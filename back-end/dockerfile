@@ -1,0 +1,16 @@
+FROM python:3.12-alpine
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+EXPOSE 8000
+
+# Variável de ambiente será passada no docker-compose ou runtime
+# Se não for passada, o app.py usará o valor padrão
+ENV API_GATEWAY_URL=""
+
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
